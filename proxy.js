@@ -1,6 +1,8 @@
 const axios = require('axios');
-const http = require('http');
+const express = require('express');
 const yargs = require('yargs/yargs');
+
+const app = express();
 
 const argv = yargs(process.argv.slice(2))
     .command('* <feed>', 'Start the proxy server', (yargs) => {
@@ -28,7 +30,7 @@ const argv = yargs(process.argv.slice(2))
     })
     .argv;
 
-http.createServer((req, res) => {
+app.get('/', (req, res) => {
   console.log('Received request');
 
   axios.get(argv.feed)
@@ -45,7 +47,9 @@ http.createServer((req, res) => {
         res.end('Error: ' + error.message);
         console.log('Error (' + error.message + ')');
       });
-}).listen(argv.port, argv.ip, () => {
+});
+
+app.listen(argv.port, argv.ip, () => {
   console.log('Listening on ' + argv.ip + ':' + argv.port + '...');
 });
 
