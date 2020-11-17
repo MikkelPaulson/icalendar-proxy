@@ -29,8 +29,7 @@ const argv = yargs(process.argv.slice(2))
     .argv;
 
 const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+    console.log("Received request");
 
     https.get(argv.feed, (queryRes) => {
         var data = "";
@@ -40,10 +39,17 @@ const server = http.createServer((req, res) => {
         });
 
         queryRes.on("end", () => {
-            res.end(addReminders(data));
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+            var processedData = addReminders(data);
+            res.end(processedData);
+            console.log("Success (length " + processedData.length + ")");
         });
     }).on("error", (error) => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "text/plain");
         res.end("Error: " + error.message);
+        console.log("Error (" + error.message + ")");
     });
 }).listen(argv.port, argv.ip, () => {
     console.log("Listening on " + argv.ip + ":" + argv.port + "...");
