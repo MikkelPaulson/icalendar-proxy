@@ -18,7 +18,7 @@ To get started, clone this repository, then run:
 
 To start the server, run:
 
-    node proxy.js https://example.com/feed.ics
+    node app.js https://example.com/feed.ics
 
 You can then add the following feed URL to your calendar app:
 
