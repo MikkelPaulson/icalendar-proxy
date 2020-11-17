@@ -1,5 +1,5 @@
+const axios = require('axios');
 const http = require('http');
-const https = require('https');
 const yargs = require('yargs/yargs');
 
 const argv = yargs(process.argv.slice(2))
@@ -31,26 +31,20 @@ const argv = yargs(process.argv.slice(2))
 http.createServer((req, res) => {
   console.log('Received request');
 
-  https.get(argv.feed, (queryRes) => {
-    let data = '';
-
-    queryRes.on('data', (chunk) => {
-      data += chunk;
-    });
-
-    queryRes.on('end', () => {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
-      const processedData = addReminders(data);
-      res.end(processedData);
-      console.log('Success (length ' + processedData.length + ')');
-    });
-  }).on('error', (error) => {
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Error: ' + error.message);
-    console.log('Error (' + error.message + ')');
-  });
+  axios.get(argv.feed)
+      .then((sourceResult) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+        const processedData = addReminders(sourceResult.data);
+        res.end(processedData);
+        console.log('Success (length ' + processedData.length + ')');
+      })
+      .catch((error) => {
+        res.statusCode = 500;
+        res.setHeader('Content-Type', 'text/plain');
+        res.end('Error: ' + error.message);
+        console.log('Error (' + error.message + ')');
+      });
 }).listen(argv.port, argv.ip, () => {
   console.log('Listening on ' + argv.ip + ':' + argv.port + '...');
 });
