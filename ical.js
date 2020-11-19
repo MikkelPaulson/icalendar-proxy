@@ -12,6 +12,11 @@ class ICalendarProperty {
    * @param {string} value
    */
   constructor(name, parameters, value) {
+    if (name == '') {
+      throw new Error(
+          'Constructed with invalid property name',
+      );
+    }
     this.name = name;
     this.parameters = parameters;
     this.value = value;
@@ -57,7 +62,7 @@ class ICalendarProperty {
             throw new Error(`Unrecognized escape sequence (${line}:${i})`);
         }
         escaped = false;
-      } else if (mode = 'value') {
+      } else if (mode == 'value') {
         value += char;
       } else if (quoted) {
         switch (char) {
@@ -153,11 +158,52 @@ class ICalendarProperty {
         throw new Error(`Unexpected EOL in param value (${line}:${i})`);
     }
 
-    return new ICalendarProperty(
+    if (name == '') {
+      throw new Error(`Invalid property name (${line}:${i})`);
+    }
+
+    const result = new ICalendarProperty(
         name.toUpperCase(),
         parameters,
         value,
     );
+
+    const checkStr = result.toString();
+
+    if (checkStr != str) {
+      throw new Error(
+          `Failed round-trip test, original "${str}", result "${checkStr}"`,
+      );
+    }
+
+    return result;
+  }
+
+  /**
+   * @return {string}
+   */
+  toString() {
+    if (!this.name.match(/^[A-Za-z0-9-]+$/)) {
+      throw new Error(`Invalid property name: ${this.name}`);
+    }
+
+    let result = this.name;
+
+    for (const key in this.parameters) {
+      if (Object.prototype.hasOwnProperty.call(this.parameters, key)) {
+        const value = this.parameters[key];
+
+        if (!key.match(/^[A-Za-z0-9-]+$/)) {
+          throw new Error(`Invalid param key: ${key}`);
+        }
+
+        result += ';' + key + '=' + value;
+      }
+    }
+
+    result += ':' + this.value;
+
+    return result;
   }
 }
 
@@ -296,6 +342,16 @@ class ICalendarComponent {
     return ICalendarComponent.fromBuffer(Buffer.from(str));
   }
 }
+
+/*
+const property = new ICalendarProperty(
+    'REFRESH-INTERVAL',
+    {VALUE: 'DURATION'},
+    'PT1M',
+);
+
+console.log(property.toString());
+*/
 
 fs.readFile('source.ics', (err, buf) => {
   if (err) {
