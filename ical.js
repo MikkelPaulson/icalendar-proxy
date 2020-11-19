@@ -201,7 +201,9 @@ class ICalendarProperty {
       }
     }
 
-    result += ':' + this.value;
+    result += ':' + this.value
+        .replace(/\n/g, '\\n')
+        .replace(/[,;']/g, '\\$&');
 
     return result;
   }
@@ -289,22 +291,6 @@ class ICalendarComponent {
    * @return {ICalendar}
    */
   static fromBuffer(buf) {
-    const removeSlashes = (string) => {
-      return string.replace(/\\[\\;,Nn]/g, (match) => {
-        switch (match) {
-          case '\\n':
-          case '\\N':
-            return '\n';
-          case '\\,':
-            return ',';
-          case '\\;':
-            return ';';
-          default:
-            return match;
-        }
-      });
-    };
-
     const data = [];
     let field = Buffer.alloc(0);
     let start = 0;
@@ -319,7 +305,7 @@ class ICalendarComponent {
         field = Buffer.concat([field, buf.slice(start + 1, offset)]);
       } else {
         if (field.length > 0) {
-          data.push(removeSlashes(field.toString('utf-8')));
+          data.push(field.toString('utf-8'));
         }
         field = buf.slice(start, offset);
       }
@@ -328,7 +314,7 @@ class ICalendarComponent {
     }
 
     if (start < buf.length) {
-      data.push(removeSlashes(field.toString('utf-8')));
+      data.push(field.toString('utf-8'));
     }
 
     return ICalendarComponent.fromArray(data);
@@ -340,6 +326,48 @@ class ICalendarComponent {
    */
   static fromString(str) {
     return ICalendarComponent.fromBuffer(Buffer.from(str));
+  }
+
+  /**
+   * @return {array}
+   */
+  toArray() {
+    const result = [];
+
+    result.push(`BEGIN:${this.name}`);
+
+    for (let i = 0; i < this.properties.length; i++) {
+      result.push(this.properties[i].toString());
+    }
+
+    for (let i = 0; i < this.components.length; i++) {
+      result.push(...this.components[i].toArray());
+    }
+
+    result.push(`END:${this.name}`);
+
+    return result;
+  }
+
+  /**
+   * @return {string}
+   */
+  toString() {
+    const arr = this.toArray();
+    let result = '';
+
+    for (let i = 0; i < arr.length; i++) {
+      let element = arr[i];
+
+      while (element.length > 75) {
+        result += element.slice(0, 75) + '\r\n';
+        element = ' ' + element.slice(75);
+      }
+
+      result += element + '\r\n';
+    }
+
+    return result;
   }
 }
 
@@ -359,5 +387,5 @@ fs.readFile('source.ics', (err, buf) => {
     return;
   }
 
-  console.log(ICalendarComponent.fromBuffer(buf));
+  console.log(ICalendarComponent.fromBuffer(buf).toString());
 });
