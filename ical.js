@@ -1,12 +1,15 @@
 const fs = require('fs');
 
 /**
+ * @property {string} name
+ * @property {object} parameters
+ * @property {string} value
  */
 class ICalendarProperty {
   /**
-   * @param {String} name
-   * @param {Object} parameters
-   * @param {String} value
+   * @param {string} name
+   * @param {object} parameters
+   * @param {string} value
    */
   constructor(name, parameters, value) {
     this.name = name;
@@ -15,8 +18,8 @@ class ICalendarProperty {
   }
 
   /**
-   * @param {String} str
-   * @param {Integer} line
+   * @param {string} str
+   * @param {integer} line
    * @return {ICalendarProperty}
    */
   static fromString(str, line = 0) {
@@ -159,12 +162,15 @@ class ICalendarProperty {
 }
 
 /**
+ * @property {string} name
+ * @property {array} properties
+ * @property {array} components
  */
 class ICalendarComponent {
   /**
-   * @param {String} name
-   * @param {Object} properties
-   * @param {Object} components
+   * @param {string} name
+   * @param {array} properties
+   * @param {array} components
    */
   constructor(name, properties, components) {
     this.name = name;
@@ -173,7 +179,7 @@ class ICalendarComponent {
   }
 
   /**
-   * @param {Array} arr
+   * @param {array} arr
    * @return {ICalendarComponent}
    */
   static fromArray(arr) {
@@ -182,9 +188,9 @@ class ICalendarComponent {
   }
 
   /**
-   * @param {Array} arr
-   * @param {Integer} offset
-   * @return {Array}
+   * @param {array} arr
+   * @param {integer} offset
+   * @return {array}
    */
   static fromArrayInternal(arr, offset) {
     const componentPattern = /^(BEGIN|END):([A-Z0-9a-z-]+)$/;
@@ -283,7 +289,7 @@ class ICalendarComponent {
   }
 
   /**
-   * @param {String} str
+   * @param {string} str
    * @return {ICalendar}
    */
   static fromString(str) {
