@@ -30,12 +30,13 @@ class ICalendarProperty {
     let value = '';
 
     let escaped = false;
+    let quoted = false;
     let mode = 'name';
     let scratch = '';
 
     for (let i = 0; i < str.length; i++) {
+      const char = str.charAt(i);
       if (escaped) {
-        const char = str.charAt(i);
         switch (char) {
           case 'n':
           case 'N':
@@ -46,6 +47,7 @@ class ICalendarProperty {
           case ';':
           case ':':
           case '=':
+          case '"':
             scratch += char;
             break;
           default:
@@ -53,12 +55,26 @@ class ICalendarProperty {
         }
         escaped = false;
       } else if (mode = 'value') {
-        value += str.charAt(i);
+        value += char;
+      } else if (quoted) {
+        switch (char) {
+          case '"':
+            quoted = false;
+            break;
+          case '\\':
+            escaped = true;
+            break;
+          default:
+            scratch += char;
+            break;
+        }
       } else {
-        const char = str.charAt(i);
         switch (char) {
           case '\\':
             escaped = true;
+            break;
+          case '"':
+            quoted = true;
             break;
           case ';':
             switch (mode) {
