@@ -1,11 +1,15 @@
-const Property = require('./property');
+import Property from './property';
 
 /**
  * @property {string} name
  * @property {array} properties
  * @property {array} components
  */
-class Component {
+export default class Component {
+  name: string;
+  properties: Array<Property>;
+  components: Array<Component>;
+
   /**
    * @param {string} name
    * @param {array} properties

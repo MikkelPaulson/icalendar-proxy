@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^14.14.8",
+    "@types/yargs": "^15.0.10",
     "axios": "^0.21.0",
     "express": "^4.17.1",
     "yargs": "^16.1.1"

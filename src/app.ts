@@ -1,17 +1,16 @@
-const axios = require('axios');
-const express = require('express');
-const yargs = require('yargs/yargs');
+import axios from 'axios';
+import express from 'express';
+import yargs = require('yargs/yargs');
 
 const app = express();
 
 const argv = yargs(process.argv.slice(2))
-    .command('* <feed>', 'Start the proxy server', (yargs) => {
-      yargs.positional('feed', {
-        describe: 'The feed URL to proxy',
-        type: 'string',
-      });
-    })
     .options({
+      'feed': {
+        describe: 'The feed URL to proxy',
+        demandOption: true,
+        type: 'string',
+      },
       'ip': {
         default: '127.0.0.1',
         describe: 'IP address to listen on',

@@ -3,7 +3,11 @@
  * @property {object} parameters
  * @property {string} value
  */
-class Property {
+export default class Property {
+  name: string;
+  parameters: any;
+  value: string;
+
   /**
    * @param {string} name
    * @param {object} parameters
@@ -149,15 +153,15 @@ class Property {
 
     switch (mode) {
       case 'name':
-        throw new Error(`Unexpected EOL in name (${line}:${i})`);
+        throw new Error(`Unexpected EOL in name (${line})`);
       case 'parameterKey':
-        throw new Error(`Unexpected EOL in param key (${line}:${i})`);
+        throw new Error(`Unexpected EOL in param key (${line})`);
       case 'parameterValue':
-        throw new Error(`Unexpected EOL in param value (${line}:${i})`);
+        throw new Error(`Unexpected EOL in param value (${line})`);
     }
 
     if (name == '') {
-      throw new Error(`Invalid property name (${line}:${i})`);
+      throw new Error(`Invalid property name (${line})`);
     }
 
     const result = new Property(
@@ -198,5 +202,3 @@ class Property {
     return result;
   }
 }
-
-module.exports = Property;
