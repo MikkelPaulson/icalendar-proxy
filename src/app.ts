@@ -86,19 +86,25 @@ app.listen(argv.port, argv.ip, () => {
  */
 function addReminders(input) {
   const parsedInput = icalendar.Component.fromString(input);
-  const reminder = new icalendar.Component(
-      'VALARM',
-      [
-        new icalendar.Property('ACTION', {}, 'DISPLAY'),
-        new icalendar.Property('TRIGGER', {VALUE: 'DURATION'}, '-PT10M'),
-        new icalendar.Property('DESCRIPTION', {}, 'Checkins'),
-      ],
-      [],
-  );
 
   for (const event of parsedInput.components) {
     if (event.name == 'VEVENT') {
-      event.components.push(reminder);
+      let summary = '';
+      for (const property of event.properties) {
+        if (property.name == 'SUMMARY') {
+          summary = property.value;
+        }
+      }
+
+      event.components.push(new icalendar.Component(
+          'VALARM',
+          [
+            new icalendar.Property('ACTION', {}, 'DISPLAY'),
+            new icalendar.Property('TRIGGER', {VALUE: 'DURATION'}, '-PT10M'),
+            new icalendar.Property('DESCRIPTION', {}, summary),
+          ],
+          [],
+      ));
     }
   }
 
