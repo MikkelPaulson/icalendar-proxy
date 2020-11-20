@@ -1,2 +1,2 @@
-exports.Component = require('./component');
-exports.Property = require('./property');
+export * from './component';
+export * from './property';

@@ -1,5 +1,6 @@
 import axios from 'axios';
-import express from 'express';
+import express = require('express');
+import icalendar = require('./icalendar');
 import yargs = require('yargs/yargs');
 
 const app = express();
@@ -84,13 +85,22 @@ app.listen(argv.port, argv.ip, () => {
  * @return {string}
  */
 function addReminders(input) {
-  return input.replace(
-      /^SUMMARY:(.*)$/gm,
-      'SUMMARY:$1\r\n' +
-      'BEGIN:VALARM\r\n' +
-      'ACTION:DISPLAY\r\n' +
-      'TRIGGER;VALUE=DURATION:-PT' + argv.minutes + 'M\r\n' +
-      'DESCRIPTION:$1\r\n' +
-      'END:VALARM',
+  const parsedInput = icalendar.Component.fromString(input);
+  const reminder = new icalendar.Component(
+      'VALARM',
+      [
+        new icalendar.Property('ACTION', {}, 'DISPLAY'),
+        new icalendar.Property('TRIGGER', {VALUE: 'DURATION'}, '-PT10M'),
+        new icalendar.Property('DESCRIPTION', {}, 'Checkins'),
+      ],
+      [],
   );
+
+  for (const event of parsedInput.components) {
+    if (event.name == 'VEVENT') {
+      event.components.push(reminder);
+    }
+  }
+
+  return parsedInput.toString();
 }

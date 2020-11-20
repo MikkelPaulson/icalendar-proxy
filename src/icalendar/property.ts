@@ -3,7 +3,7 @@
  * @property {object} parameters
  * @property {string} value
  */
-export default class Property {
+export class Property {
   name: string;
   parameters: any;
   value: string;

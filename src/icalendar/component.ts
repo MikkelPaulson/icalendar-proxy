@@ -1,11 +1,11 @@
-import Property from './property';
+import {Property} from './property';
 
 /**
  * @property {string} name
  * @property {array} properties
  * @property {array} components
  */
-export default class Component {
+export class Component {
   name: string;
   properties: Array<Property>;
   components: Array<Component>;
@@ -165,5 +165,3 @@ export default class Component {
     return result;
   }
 }
-
-module.exports = Component;

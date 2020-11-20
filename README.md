@@ -18,7 +18,7 @@ To get started, clone this repository, then run:
 
 To start the server, run:
 
-    node app.js https://example.com/feed.ics
+    npm run tsc && node dist/app.js https://example.com/feed.ics
 
 You can then add the following feed URL to your calendar app:
 
@@ -26,6 +26,9 @@ You can then add the following feed URL to your calendar app:
 
 ## To do
 
-* Figure out why Thunderbird is giving me reminders every half-hour.
-* This uses a very naive parser. It should be fixed to actually understand the
-  iCalendar syntax rather than doing a simple string replacement.
+* ~Figure out why Thunderbird is giving me reminders every half-hour.~
+  * Fix the fact that Thunderbird is telling the server to dismiss the alarm,
+    but the server doesn't know how.
+* ~This uses a very naive parser. It should be fixed to actually understand the
+  iCalendar syntax rather than doing a simple string replacement.~ It
+  understands. It does not comprehend.
